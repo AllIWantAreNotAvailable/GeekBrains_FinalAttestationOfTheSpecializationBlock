@@ -1,3 +1,4 @@
+```Bash
 ❯ mps FinalAttestation-Specialisation
 Welcome to Ubuntu 24.04.1 LTS (GNU/Linux 6.8.0-45-generic x86_64)
 
@@ -330,4 +331,4 @@ update-alternatives: using /etc/mysql/my.cnf.fallback to provide /etc/mysql/my.c
 ubuntu@FinalAttestation-Specialisation:~/mysql$ sudo dpkg --purge mysql-community-server
 (Reading database ... 72380 files and directories currently installed.)
 Purging configuration files for mysql-community-server (8.4.3-1ubuntu22.04) ...
-
+```
