@@ -778,5 +778,30 @@ mysql> SELECT * FROM HorsesAndDonkeys;
 +-----------+---------+---------+-----+---------------+---------------------+
 4 rows in set (0.00 sec)
 
+mysql> CREATE TABLE YoungAnimals (
+    ->     animal_id INT PRIMARY KEY,
+    ->     name VARCHAR(100) NOT NULL,
+    ->     subtype VARCHAR(50) NOT NULL,
+    ->     age INT NOT NULL
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> INSERT INTO YoungAnimals (animal_id, name, subtype, age)
+    -> SELECT a.id, a.name, s.subtype_name, a.age
+    -> FROM Animals AS a
+    -> JOIN Subtypes AS s ON a.subtype_id = s.subtype_id
+    -> WHERE a.age > 1 AND a.age < 3;
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM YoungAnimals;
++-----------+----------+---------+-----+
+| animal_id | name     | subtype | age |
++-----------+----------+---------+-----+
+|         3 | Whiskers | cat     |   2 |
+|         6 | Chewy    | hamster |   2 |
++-----------+----------+---------+-----+
+2 rows in set (0.00 sec)
+
 mysql>
 ```
