@@ -658,4 +658,76 @@ mysql> SHOW TABLES
 | Subtypes         |
 +------------------+
 6 rows in set (0.00 sec)
+
+mysql> INSERT INTO Commands (command_name) VALUES
+    ->     ('sit'),
+    ->     ('stay'),
+    ->     ('come'),
+    ->     ('fetch'),
+    ->     ('roll over'),
+    ->     ('heel'),
+    ->     ('speak'),
+    ->     ('shake'),
+    ->     ('jump'),
+    ->     ('guard'),
+    ->     ('attack'),
+    ->     ('herd');
+Query OK, 12 rows affected (0.07 sec)
+Records: 12  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Subtypes (subtype_name) VALUES
+    ->     ('dog'),
+    ->     ('cat'),
+    ->     ('hamster'),
+    ->     ('horse'),
+    ->     ('camel'),
+    ->     ('donkey');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Animals (name, type, subtype_id, age) VALUES
+    ->     ('Buddy', 'domestic', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'dog'), 3),
+    ->     ('Charlie', 'domestic', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'dog'), 5),
+    ->     ('Whiskers', 'domestic', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'cat'), 2),
+    ->     ('Mittens', 'domestic', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'cat'), 4),
+    ->     ('Nibbles', 'domestic', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'hamster'), 1),
+    ->     ('Chewy', 'domestic', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'hamster'), 2),
+    ->     ('Spirit', 'pack', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'horse'), 8),
+    ->     ('Majesty', 'pack', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'horse'), 10),
+    ->     ('Oasis', 'pack', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'camel'), 12),
+    ->     ('Dune', 'pack', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'camel'), 15),
+    ->     ('Rusty', 'pack', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'donkey'), 6),
+    ->     ('Dusty', 'pack', (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'donkey'), 8);
+Query OK, 12 rows affected (0.01 sec)
+Records: 12  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO AnimalCommands (animal_id, command_id) VALUES
+    ->     ((SELECT id FROM Animals WHERE name = 'Buddy'), (SELECT command_id FROM Commands WHERE command_name = 'sit')),
+    ->     ((SELECT id FROM Animals WHERE name = 'Buddy'), (SELECT command_id FROM Commands WHERE command_name = 'stay')),
+    ->     ((SELECT id FROM Animals WHERE name = 'Charlie'), (SELECT command_id FROM Commands WHERE command_name = 'come')),
+    ->     ((SELECT id FROM Animals WHERE name = 'Whiskers'), (SELECT command_id FROM Commands WHERE command_name = 'jump'));
+Query OK, 4 rows affected (0.01 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO DomesticAnimals (animal_id, favorite_food, living_conditions) VALUES
+    ->     ((SELECT id FROM Animals WHERE name = 'Buddy'), 'dog food', 'indoor/outdoor'),
+    ->     ((SELECT id FROM Animals WHERE name = 'Charlie'), 'dog food', 'outdoor'),
+    ->     ((SELECT id FROM Animals WHERE name = 'Whiskers'), 'cat food', 'indoor'),
+    ->     ((SELECT id FROM Animals WHERE name = 'Mittens'), 'cat food', 'indoor'),
+    ->     ((SELECT id FROM Animals WHERE name = 'Nibbles'), 'seeds', 'cage'),
+    ->     ((SELECT id FROM Animals WHERE name = 'Chewy'), 'fruits', 'cage');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO PackAnimals (animal_id, load_capacity, terrain_suitability) VALUES
+    ->     ((SELECT id FROM Animals WHERE name = 'Spirit'), 150.0, 'plains'),
+    ->     ((SELECT id FROM Animals WHERE name = 'Majesty'), 180.0, 'mountains'),
+    ->     ((SELECT id FROM Animals WHERE name = 'Oasis'), 200.0, 'desert'),
+    ->     ((SELECT id FROM Animals WHERE name = 'Dune'), 220.0, 'desert'),
+    ->     ((SELECT id FROM Animals WHERE name = 'Rusty'), 100.0, 'plains'),
+    ->     ((SELECT id FROM Animals WHERE name = 'Dusty'), 120.0, 'plains');
+Query OK, 6 rows affected (0.01 sec)
+Records: 6  Duplicates: 0  Warnings: 0
+
+mysql>
 ```
