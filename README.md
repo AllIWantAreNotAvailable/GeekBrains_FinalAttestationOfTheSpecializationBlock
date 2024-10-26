@@ -729,5 +729,54 @@ mysql> INSERT INTO PackAnimals (animal_id, load_capacity, terrain_suitability) V
 Query OK, 6 rows affected (0.01 sec)
 Records: 6  Duplicates: 0  Warnings: 0
 
+mysql> DELETE FROM AnimalCommands
+    -> WHERE animal_id IN (
+    ->     SELECT id FROM Animals
+    ->     WHERE subtype_id = (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'camel')
+    -> );
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> DELETE FROM PackAnimals
+    -> WHERE animal_id IN (
+    ->     SELECT id FROM Animals
+    ->     WHERE subtype_id = (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'camel')
+    -> );
+Query OK, 2 rows affected (0.01 sec)
+
+mysql> DELETE FROM Animals
+    -> WHERE subtype_id = (SELECT subtype_id FROM Subtypes WHERE subtype_name = 'camel');
+Query OK, 2 rows affected (0.01 sec)
+
+mysql> CREATE TABLE HorsesAndDonkeys (
+    ->     animal_id INT PRIMARY KEY,
+    ->     name VARCHAR(100) NOT NULL,
+    ->     subtype VARCHAR(50) NOT NULL,
+    ->     age INT NOT NULL,
+    ->     load_capacity FLOAT NOT NULL,
+    ->     terrain_suitability VARCHAR(100)
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> INSERT INTO HorsesAndDonkeys (animal_id, name, subtype, age, load_capacity, terrain_suitability)
+    -> SELECT a.id, a.name, s.subtype_name, a.age, p.load_capacity, p.terrain_suitability
+    -> FROM Animals AS a
+    -> JOIN Subtypes AS s ON a.subtype_id = s.subtype_id
+    -> JOIN PackAnimals AS p ON a.id = p.animal_id
+    -> WHERE s.subtype_name IN ('horse', 'donkey')
+    -> ;
+Query OK, 4 rows affected (0.00 sec)
+Records: 4  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM HorsesAndDonkeys;
++-----------+---------+---------+-----+---------------+---------------------+
+| animal_id | name    | subtype | age | load_capacity | terrain_suitability |
++-----------+---------+---------+-----+---------------+---------------------+
+|         7 | Spirit  | horse   |   8 |           150 | plains              |
+|         8 | Majesty | horse   |  10 |           180 | mountains           |
+|        11 | Rusty   | donkey  |   6 |           100 | plains              |
+|        12 | Dusty   | donkey  |   8 |           120 | plains              |
++-----------+---------+---------+-----+---------------+---------------------+
+4 rows in set (0.00 sec)
+
 mysql>
 ```
