@@ -632,5 +632,30 @@ mysql> SHOW TABLES;
 +------------------+
 5 rows in set (0.01 sec)
 
-mysql>
+mysql> CREATE TABLE Subtypes (
+    ->     subtype_id INT PRIMARY KEY AUTO_INCREMENT,
+    ->     subtype_name VARCHAR(50) NOT NULL UNIQUE
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> ALTER TABLE Animals
+    -> ADD COLUMN subtype_id INT,
+    -> ADD CONSTRAINT fk_subtype
+    ->     FOREIGN KEY (subtype_id) REFERENCES Subtypes(subtype_id);
+Query OK, 0 rows affected (0.07 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW TABLES
+    -> ;
++------------------+
+| Tables_in_Kennel |
++------------------+
+| AnimalCommands   |
+| Animals          |
+| Commands         |
+| DomesticAnimals  |
+| PackAnimals      |
+| Subtypes         |
++------------------+
+6 rows in set (0.00 sec)
 ```
