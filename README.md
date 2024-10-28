@@ -1,36 +1,9 @@
+# Задания
+
+
+## 1. Используя команду cat в терминале операционной системы Linux, создать два файла Домашние животные (заполнив файл собаками, кошками, хомяками) и Вьючные животными заполнив файл Лошадьми, верблюдами и ослы), а затем объединить их. Просмотреть содержимое созданного файла. Переименовать файл, дав ему новое имя (Друзья человека).
+
 ```Bash
-Welcome to Ubuntu 24.04.1 LTS (GNU/Linux 6.8.0-45-generic x86_64)
-
- * Documentation:  https://help.ubuntu.com
- * Management:     https://landscape.canonical.com
- * Support:        https://ubuntu.com/pro
-
- System information as of Wed Oct 23 22:38:30 MSK 2024
-
-  System load:           0.12
-  Usage of /:            43.9% of 3.80GB
-  Memory usage:          20%
-  Swap usage:            0%
-  Processes:             104
-  Users logged in:       0
-  IPv4 address for ens3: 192.168.64.9
-  IPv6 address for ens3: fde8:5ff6:ce86:7205:5054:ff:fe7d:8c46
-
-
-Expanded Security Maintenance for Applications is not enabled.
-
-27 updates can be applied immediately.
-17 of these updates are standard security updates.
-To see these additional updates run: apt list --upgradable
-
-Enable ESM Apps to receive additional future security updates.
-See https://ubuntu.com/esm or run: sudo pro status
-
-
-Last login: Wed Oct 23 22:18:24 2024 from 192.168.64.1
-To run a command as administrator (user "root"), use "sudo <command>".
-See "man sudo_root" for details.
-
 ubuntu@FinalAttestation-Specialisation:~$ cat > Domestic_animals.txt <<EOL
 > dogs
 > cats
@@ -39,7 +12,7 @@ ubuntu@FinalAttestation-Specialisation:~$ cat > Domestic_animals.txt <<EOL
 ubuntu@FinalAttestation-Specialisation:~$ cat > Pack_animals.txt <<EOL
 > horses
 > camels
-> dunkeys
+> donkeys
 > EOL
 ubuntu@FinalAttestation-Specialisation:~$ cat Domestic_animals.txt Pack_animals.txt > Union.txt
 ubuntu@FinalAttestation-Specialisation:~$ cat Union.txt
@@ -48,10 +21,22 @@ cats
 hamsters
 horses
 camels
-dunkeys
+donkeys
 ubuntu@FinalAttestation-Specialisation:~$ mv Union.txt Human_friends.txt
+```
+
+
+## 2. Создать директорию, переместить файл туда.
+
+```Bash
 ubuntu@FinalAttestation-Specialisation:~$ mkdir TaskFolder
 ubuntu@FinalAttestation-Specialisation:~$ mv Human_friends.txt TaskFolder/Human_friends.txt
+```
+
+
+## 3. Подключить дополнительный репозиторий MySQL. Установить любой пакет из этого репозитория.
+
+```Bash
 ubuntu@FinalAttestation-Specialisation:~$ wget https://dev.mysql.com/get/mysql-apt-config_0.8.33-1_all.deb
 --2024-10-24 00:10:22--  https://dev.mysql.com/get/mysql-apt-config_0.8.33-1_all.deb
 Resolving dev.mysql.com (dev.mysql.com)... 88.221.98.102, 2a02:26f0:9500:98f::2e31, 2a02:26f0:9500:98d::2e31
@@ -304,6 +289,12 @@ ubuntu@FinalAttestation-Specialisation:~/mysql$ sudo systemctl status mysql
 
 Oct 24 00:36:29 FinalAttestation-Specialisation systemd[1]: Starting mysql.service - MySQL Community Server...
 Oct 24 00:36:30 FinalAttestation-Specialisation systemd[1]: Started mysql.service - MySQL Community Server.
+```
+
+
+## 4. Установить и удалить deb-пакет с помощью dpkg.
+
+```Bash
 ubuntu@FinalAttestation-Specialisation:~/mysql$ sudo systemctl stop mysql
 ubuntu@FinalAttestation-Specialisation:~/mysql$ sudo systemctl status mysql
 ○ mysql.service - MySQL Community Server
@@ -330,6 +321,15 @@ update-alternatives: using /etc/mysql/my.cnf.fallback to provide /etc/mysql/my.c
 ubuntu@FinalAttestation-Specialisation:~/mysql$ sudo dpkg --purge mysql-community-server
 (Reading database ... 72380 files and directories currently installed.)
 Purging configuration files for mysql-community-server (8.4.3-1ubuntu22.04) ...
+```
+
+
+## 5. Выложить историю команд в терминале ubuntu
+
+> Все задачи сопровождаются непрерывной историей взаимодействия с терминалом, далее часть перед заданием №6.
+> 
+
+```Bash
 ubuntu@FinalAttestation-Specialisation:~/MySQL$ sudo apt-get install mysql-server
 Reading package lists... Done
 Building dependency tree... Done
@@ -522,6 +522,17 @@ ubuntu@FinalAttestation-Specialisation:~/MySQL$ systemctl status mysql
 
 Oct 26 23:23:15 FinalAttestation-Specialisation systemd[1]: Starting mysql.service - MySQL Community Server...
 Oct 26 23:23:16 FinalAttestation-Specialisation systemd[1]: Started mysql.service - MySQL Community Server.
+```
+
+
+## 6. Нарисовать диаграмму, в которой есть класс родительский класс, домашние животные и вьючные животные, в составы которых в случае домашних животных войдут классы: собаки, кошки, хомяки, а в класс вьючные животные войдут: Лошади, верблюды и ослы).
+
+![Диаграмма](./Attachments/DataBase_scheme.drawio.png)
+
+
+## 7. В подключенном MySQL репозитории создать базу данных “Друзья человека”
+
+```Bash
 ubuntu@FinalAttestation-Specialisation:~/MySQL$ mysql
 ERROR 1045 (28000): Access denied for user 'ubuntu'@'localhost' (using password: NO)
 ubuntu@FinalAttestation-Specialisation:~/MySQL$ sudo mysql
@@ -558,11 +569,14 @@ mysql> SHOW DATABASES;
 
 mysql> USE Kennel
 Database changed
-mysql> SHOW TABLES
-    ->
-    -> ;
+mysql> SHOW TABLES;
 Empty set (0.00 sec)
+```
 
+
+## 8. Создать таблицы с иерархией из диаграммы в БД
+
+```Bash
 mysql> CREATE TABLE Animals (
     -> id INT PRIMARY KEY AUTO_INCREMENT,
     -> name VARCHAR(100) NOT NULL,
@@ -658,7 +672,12 @@ mysql> SHOW TABLES
 | Subtypes         |
 +------------------+
 6 rows in set (0.00 sec)
+```
 
+
+## 9. Заполнить низкоуровневые таблицы именами(животных), командами которые они выполняют и датами рождения
+
+```Bash
 mysql> INSERT INTO Commands (command_name) VALUES
     ->     ('sit'),
     ->     ('stay'),
@@ -728,7 +747,12 @@ mysql> INSERT INTO PackAnimals (animal_id, load_capacity, terrain_suitability) V
     ->     ((SELECT id FROM Animals WHERE name = 'Dusty'), 120.0, 'plains');
 Query OK, 6 rows affected (0.01 sec)
 Records: 6  Duplicates: 0  Warnings: 0
+```
 
+
+## 10. Удалив из таблицы верблюдов, так как верблюдов решили перевезти в другой питомник на зимовку. Объединить таблицы лошади, и ослы в одну таблицу.
+
+```Bash
 mysql> DELETE FROM AnimalCommands
     -> WHERE animal_id IN (
     ->     SELECT id FROM Animals
@@ -777,7 +801,12 @@ mysql> SELECT * FROM HorsesAndDonkeys;
 |        12 | Dusty   | donkey  |   8 |           120 | plains              |
 +-----------+---------+---------+-----+---------------+---------------------+
 4 rows in set (0.00 sec)
+```
 
+
+## 11. Создать новую таблицу “молодые животные” в которую попадут все животные старше 1 года, но младше 3 лет и в отдельном столбце с точностью до месяца подсчитать возраст животных в новой таблице
+
+```Bash
 mysql> CREATE TABLE YoungAnimals (
     ->     animal_id INT PRIMARY KEY,
     ->     name VARCHAR(100) NOT NULL,
@@ -805,3 +834,28 @@ mysql> SELECT * FROM YoungAnimals;
 
 mysql>
 ```
+
+
+## 13. Создать класс с Инкапсуляцией методов и наследованием по диаграмме.
+
+> Реализовано в проекте Kennel, проект написан на Python с использованием системы контроля зависимостей Poetry.
+> 
+
+
+## 14. Написать программу, имитирующую работу реестра домашних животных.
+
+В программе должен быть реализован следующий функционал:
+- [X] завести новое животное;
+- [X] определять животное в правильный класс;
+- [X] увидеть список команд, которое выполняет животное;
+- [X] обучить животное новым командам;
+- [X] реализовать навигацию по меню.
+
+> Реализовано в проекте Kennel, проект написан на Python с использованием системы контроля зависимостей Poetry.
+> 
+
+
+## 15. Создайте класс Счетчик, у которого есть метод add(), увеличивающий значение внутренней int переменной на 1 при нажатие “Завести новое животное” Сделайте так, чтобы с объектом такого типа можно было работать в блоке try-with-resources. Нужно бросить исключение, если работа с объектом типа счетчик была не в ресурсном try и/или ресурс остался открыт. Значение считать в ресурсе try, если при заведения животного заполнены все поля.
+
+> Реализовано частично, так как точная реализация ломает логику работы программы, которая была написана до начала 
+> выполнения данного пункта. 
