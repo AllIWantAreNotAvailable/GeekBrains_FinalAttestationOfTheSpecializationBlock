@@ -1,3 +1,5 @@
+from abc import ABC
+
 from typing import Callable, Never
 from enum import Enum
 
@@ -12,15 +14,15 @@ class Signals(Enum):
     ERROR = 1
 
 
-class Controller:
+class AbcController(ABC):
 
-    def __init__(self, view: View = None, model: Model = None) -> None:
+    def __init__(self, stack: list[Callable[[], Signals]] = None, view: View = None, model: Model = None) -> None:
         self.view = view if view else View()
         self.model = model if model else Model()
-        self.stack: list[Callable[[], Signals]] = list()
+        self.stack = stack if stack else list()
 
     @staticmethod
-    def assertion_error(message: str) -> Never:
+    def __assertion_error(message: str) -> Never:
         assert True, message
 
     def __catcher(self, func: Callable[[], Signals]) -> Signals:
@@ -35,7 +37,7 @@ class Controller:
             self.view.show_template(str(Exception)) # TODO Check traceback stdout from view with jinja
         return signal
 
-    def __loop(self) -> None:
+    def _loop(self) -> None:
         while self.stack:
             length = len(self.stack)
             func = self.stack.pop()
@@ -50,24 +52,33 @@ class Controller:
                         self.stack.pop()
                     self.stack.append(func)
                 case _:
-                    self.assertion_error('Paranoia')
+                    self.__assertion_error('Paranoia')
 
-    def __before_startup(self) -> Signals:
+    def start(self) -> None:
+        pass
+
+
+class Controller(AbcController):
+
+    def __init__(self, stack: list[Callable[[], Signals]] = None, view: View = None, model: Model = None) -> None:
+        super().__init__(stack, view, model)
+
+    def start(self) -> None:
+        self.stack.append(self.before_shutdown)
+        AppController(self.stack).start()
+        self.stack.append(self.before_startup)
+        super()._loop()
+
+    def before_startup(self) -> Signals:
         self.view.show_template('message_greeting.jinja')
         return Signals.DONE
 
-    def __before_shutdown(self) -> Signals:
+    def before_shutdown(self) -> Signals:
         self.view.show_template('message_farewell.jinja')
         return Signals.DONE
 
-    def start(self) -> None:
-        self.stack.append(self.__before_shutdown)
-        AppController(self.stack).start()
-        self.stack.append(self.__before_startup)
-        self.__loop()
 
-
-class AppController(Controller):
+class AppController(AbcController):
 
     def __init__(self, stack: list[Callable[[], Signals]] = None, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -95,7 +106,7 @@ class AppController(Controller):
             return Signals.DONE
 
 
-class NewAnimalController(Controller):
+class NewAnimalController(AbcController):
 
     def __init__(self, stack: list[Callable[[], Signals]] = None, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
