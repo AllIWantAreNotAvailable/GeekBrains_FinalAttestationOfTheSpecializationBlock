@@ -31,6 +31,8 @@ class AbcController(ABC):
             signal = func()
         except KeyboardInterrupt:
             self.view.show_template('exception_keyboardInterrupt.jinja')
+        except ValueError:
+            self.view.show_template('exception_valueError.jinja')
         except NoSuchOptionError:
             self.view.show_template('exception_noSuchOptionError.jinja')
         except Exception:
@@ -53,6 +55,9 @@ class AbcController(ABC):
                     self.stack.append(func)
                 case _:
                     self.__assertion_error('Paranoia')
+
+    def choices(self, option: int) -> Signals | None:
+        pass
 
     def start(self) -> None:
         pass
@@ -87,23 +92,20 @@ class AppController(AbcController):
     def start(self) -> None:
         self.stack.append(self.main_menu)
 
+    def choices(self, option: int) -> Signals | None:
+        match option:
+            case 0:
+                return Signals.EXIT
+            case 1:
+                NewAnimalController(self.stack).start()
+            case 2:
+                pass
+            case _:
+                raise NoSuchOptionError
+
     def main_menu(self) -> Signals:
         std_in = self.view.show_dialog('menu_main.jinja')
-        try:
-            option = int(std_in)
-        except ValueError:
-            self.view.show_template('exception_valueError.jinja')
-        else:
-            match option:
-                case 0:
-                    return Signals.EXIT
-                case 1:
-                    NewAnimalController(self.stack).start()
-                case 2:
-                    pass
-                case _:
-                    raise NoSuchOptionError
-            return Signals.DONE
+        return self.choices(int(std_in)) or Signals.DONE
 
 
 class NewAnimalController(AbcController):
@@ -112,27 +114,25 @@ class NewAnimalController(AbcController):
         super().__init__(*args, **kwargs)
         self.stack = stack if stack else list()
 
+    def choices(self, option: int) -> Signals | None:
+        match option:
+            case 0:
+                AppController(self.stack).start()
+                return Signals.EXIT
+            case 1:
+                pass
+            case 2:
+                pass
+            case 3:
+                pass
+            case 4:
+                pass
+            case _:
+                raise NoSuchOptionError
+
     def start(self) -> None:
         self.stack.append(self.add_new_animal_menu)
 
     def add_new_animal_menu(self) -> Signals:
         std_in = self.view.show_dialog('menu_add_new_animal.jinja')
-        try:
-            option = int(std_in)
-        except ValueError:
-            self.view.show_template('exception_valueError.jinja')
-        else:
-            match option:
-                case 0:
-                    return Signals.EXIT
-                case 1:
-                    pass
-                case 2:
-                    pass
-                case 3:
-                    pass
-                case 4:
-                    pass
-                case _:
-                    raise NoSuchOptionError
-            return Signals.DONE
+        return self.choices(int(std_in)) or Signals.DONE
