@@ -1,0 +1,23 @@
+{% extends "menu.jinja" %}
+{% set title = 'НОВОЕ ЖИВОТНОЕ' %}
+{% set intro = 'Вам необходимо заполнить карточку животного, выбирайте пункты поочередно, значения можно перезаписать \
+при повторном выборе пункта.
+    Чтобы записать животное в реестр – Enter, чтобы удалить черновик – Выход.
+    Обратите внимание, все поля обязательны для заполнения, иначе запись не будет сохранена в реестр. Дополнительные
+    данные можно будет добавить в карточке животного позже' %}
+
+
+{% set category_option = 'Категория животных ({})'.format(category) if category else 'Категория животных' %}
+{% set animal_type_option = 'Вид животного ({})'.format(animal_type) if animal_type else 'Вид животного' %}
+{% set name_option = 'Кличка животного ({})'.format(name) if name else 'Кличка животного' %}
+{% set birth_date_option = 'Дата рождения животного ({})'.format(birth_date) if birth_date else 'Дата рождения животного' %}
+
+
+{% set
+    options = [
+        category_option,
+        animal_type_option,
+        name_option,
+        birth_date_option
+    ]
+%}

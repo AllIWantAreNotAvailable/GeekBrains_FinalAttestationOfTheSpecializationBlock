@@ -1,4 +1,4 @@
-from controller import AppController
+from controller import Controller
 
 if __name__ == '__main__':
-    AppController().start()
+    Controller().start()

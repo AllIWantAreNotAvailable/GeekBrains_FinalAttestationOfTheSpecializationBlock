@@ -1,0 +1,3 @@
+
+class NoSuchOptionError(IndexError):
+    pass

@@ -1,47 +1,83 @@
+from typing import Callable, Never
+from enum import Enum
+
 from view import View
-from model import Model, MAIN_MENU
+from model import Model
+from exception import NoSuchOptionError
 
 
-class NoSuchOptionException(IndexError):
-    pass
+class Signals(Enum):
+    EXIT = -1
+    DONE = 0
+    ERROR = 1
 
 
 class Controller:
 
-    def __init__(self, view: View = None, model: Model = None):
-        self.stack: list = [
-            self._before_shutdown,
-            self._before_startup
-        ]
+    def __init__(self, view: View = None, model: Model = None) -> None:
         self.view = view if view else View()
         self.model = model if model else Model()
+        self.stack: list[Callable[[], Signals]] = list()
 
-    def _before_startup(self) -> None:
+    @staticmethod
+    def assertion_error(message: str) -> Never:
+        assert True, message
+
+    def __catcher(self, func: Callable[[], Signals]) -> Signals:
+        signal: Signals = Signals.ERROR
+        try:
+            signal = func()
+        except KeyboardInterrupt:
+            self.view.show_template('exception_keyboardInterrupt.jinja')
+        except NoSuchOptionError:
+            self.view.show_template('exception_noSuchOptionError.jinja')
+        except Exception:
+            self.view.show_template(str(Exception)) # TODO Check traceback stdout from view with jinja
+        return signal
+
+    def __loop(self) -> None:
+        while self.stack:
+            length = len(self.stack)
+            func = self.stack.pop()
+            signal: Signals = self.__catcher(func)
+            match signal:
+                case Signals.EXIT:
+                    pass
+                case Signals.DONE:
+                    pass
+                case Signals.ERROR:
+                    if not length < len(self.stack):
+                        self.stack.pop()
+                    self.stack.append(func)
+                case _:
+                    self.assertion_error('Paranoia')
+
+    def __before_startup(self) -> Signals:
         self.view.show_template('message_greeting.jinja')
+        return Signals.DONE
 
-    def _before_shutdown(self) -> None:
+    def __before_shutdown(self) -> Signals:
         self.view.show_template('message_farewell.jinja')
+        return Signals.DONE
 
     def start(self) -> None:
-        while self.stack:
-            try:
-                self.stack[-1]()
-            except KeyboardInterrupt:
-                self.view.show_template('exception_keyboardInterrupt.jinja')
-            except NoSuchOptionException:
-                self.view.show_template('exception_noSuchOption.jinja')
-            else:
-                self.stack.pop()
+        self.stack.append(self.__before_shutdown)
+        AppController(self.stack).start()
+        self.stack.append(self.__before_startup)
+        self.__loop()
 
 
 class AppController(Controller):
 
-    def __init__(self):
-        super().__init__()
-        self.stack.insert(-1, self.main_menu)
+    def __init__(self, stack: list[Callable[[], Signals]] = None, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.stack = stack if stack else list()
 
-    def main_menu(self) -> None:
-        std_in = self.view.show_dialog('menu.jinja', MAIN_MENU)
+    def start(self) -> None:
+        self.stack.append(self.main_menu)
+
+    def main_menu(self) -> Signals:
+        std_in = self.view.show_dialog('menu_main.jinja')
         try:
             option = int(std_in)
         except ValueError:
@@ -49,10 +85,43 @@ class AppController(Controller):
         else:
             match option:
                 case 0:
+                    return Signals.EXIT
+                case 1:
+                    NewAnimalController(self.stack).start()
+                case 2:
                     pass
+                case _:
+                    raise NoSuchOptionError
+            return Signals.DONE
+
+
+class NewAnimalController(Controller):
+
+    def __init__(self, stack: list[Callable[[], Signals]] = None, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.stack = stack if stack else list()
+
+    def start(self) -> None:
+        self.stack.append(self.add_new_animal_menu)
+
+    def add_new_animal_menu(self) -> Signals:
+        std_in = self.view.show_dialog('menu_add_new_animal.jinja')
+        try:
+            option = int(std_in)
+        except ValueError:
+            self.view.show_template('exception_valueError.jinja')
+        else:
+            match option:
+                case 0:
+                    return Signals.EXIT
                 case 1:
                     pass
                 case 2:
                     pass
+                case 3:
+                    pass
+                case 4:
+                    pass
                 case _:
-                    raise NoSuchOptionException
+                    raise NoSuchOptionError
+            return Signals.DONE
