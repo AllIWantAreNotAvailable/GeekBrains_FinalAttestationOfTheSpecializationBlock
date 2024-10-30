@@ -1,17 +1,15 @@
 from sqlalchemy import create_engine
 
-__DEFAULT_MENU_INTRO = 'Выберите номер нужного пункта меню'
-MAIN_MENU = dict(
-    title='ГЛАВНОЕ МЕНЮ',
-    intro=__DEFAULT_MENU_INTRO,
-    options=[
-        'Добавить новое животное в реестр',
-        'Просмотреть всех животных в реестре'
-    ]
-)
-
 
 class Model:
+
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super(Model, cls).__new__(cls)
+
+        return cls.__instance
 
     def __init__(self):
         self.engine = create_engine("sqlite+pysqlite:///:memory:", echo=True)
